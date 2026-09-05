@@ -1,13 +1,15 @@
 // React imports removed as unused
 import Map from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
-import { IconLayer, PathLayer, ScatterplotLayer, GeoJsonLayer } from '@deck.gl/layers';
+import { IconLayer, PathLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { ScenegraphLayer } from '@deck.gl/mesh-layers';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useUrbrainStore } from '../store/useUrbrainStore';
 
 // Free dark basemap from CartoDB (no API key required)
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+
+// Removed SECTORS array as it is no longer used for PolygonLayer
 
 // Removed local INITIAL_VIEW_STATE in favor of global store
 
@@ -28,8 +30,9 @@ export default function CityMap() {
   const viewState = useUrbrainStore(state => state.viewState);
   const setViewState = useUrbrainStore(state => state.setViewState);
   const is3DMode = useUrbrainStore(state => state.is3DMode);
+  const setSelectedBus = useUrbrainStore(state => state.setSelectedBus);
 
-  const layers = [
+  const layers: any[] = [
     is3DMode 
       ? new ScenegraphLayer({
           id: 'buses-3d-layer',
@@ -40,6 +43,7 @@ export default function CityMap() {
           getOrientation: d => [0, -d.heading + 180, 90], // Flipped 180 degrees so they face forward (the model was natively pointing South)
           sizeScale: 20, // Increased size because this new model has a different native scale
           _lighting: 'pbr', // Restored PBR lighting so textures and materials render correctly!
+          onClick: (info: any) => { if (info.object) setSelectedBus(info.object); },
           transitions: {
             getPosition: { duration: 1000, easing: (t: number) => t }
             // Removed getOrientation transition to prevent 180-degree gimbal lock bugs when turning around
@@ -49,6 +53,7 @@ export default function CityMap() {
           id: 'buses-layer',
       data: buses,
       pickable: true,
+      onClick: (info: any) => { if (info.object) setSelectedBus(info.object); },
       iconAtlas: NAV_ICON_URL,
       iconMapping: {
         bus: { x: 0, y: 0, width: 64, height: 64, anchorX: 32, anchorY: 32 }
@@ -56,7 +61,7 @@ export default function CityMap() {
       getIcon: () => 'bus',
       sizeScale: 1,
       getPosition: (d) => [d.longitude, d.latitude],
-      getSize: (d) => 40,
+      getSize: () => 40,
       getColor: (d) => d.status === 'SEARCHING' ? [245, 158, 11] : [59, 130, 246], // Amber if searching, else blue
       getAngle: (d) => -d.heading,
       transitions: {
@@ -81,7 +86,7 @@ export default function CityMap() {
       getIcon: () => 'marker',
       sizeScale: 15,
       getPosition: (d) => [d.longitude, d.latitude],
-      getSize: (d) => 2,
+      getSize: () => 2,
       getColor: (d) => d.severity === 'HIGH' ? [239, 68, 68] : (d.severity === 'MEDIUM' ? [245, 158, 11] : [16, 185, 129])
     }),
     new PathLayer({
@@ -99,7 +104,7 @@ export default function CityMap() {
         if (d.healthScore > 50) return [245, 158, 11, 40]; // Amber glow
         return [239, 68, 68, 40]; // Red glow
       },
-      getWidth: d => 10
+      getWidth: () => 10
     }),
     new PathLayer({
       id: 'segments-layer',
@@ -116,7 +121,7 @@ export default function CityMap() {
         if (d.healthScore > 50) return [245, 158, 11, 200]; // Amber core
         return [239, 68, 68, 200]; // Red core
       },
-      getWidth: d => 3
+      getWidth: () => 3
     })
   ];
 
@@ -154,7 +159,7 @@ export default function CityMap() {
     <div className="absolute inset-0 w-full h-full">
       <DeckGL
         viewState={viewState}
-        onViewStateChange={({ viewState }) => setViewState(viewState)}
+        onViewStateChange={({ viewState }) => setViewState(viewState as any)}
         controller={true}
         layers={layers}
         style={{ position: 'absolute' }}
@@ -163,6 +168,27 @@ export default function CityMap() {
         <Map 
           mapStyle={MAP_STYLE} 
           style={{ width: '100vw', height: '100vh' }}
+          onLoad={(e) => {
+            const map = e.target;
+            if (!map.getSource('openmaptiles')) {
+              map.addSource('openmaptiles', {
+                type: 'vector',
+                url: 'https://api.protomaps.com/tiles/v3.json?key=1003762824b9687f' // public demo key
+              });
+              map.addLayer({
+                id: '3d-buildings',
+                source: 'openmaptiles',
+                'source-layer': 'buildings',
+                type: 'fill-extrusion',
+                paint: {
+                  'fill-extrusion-color': '#1e2a4a',
+                  'fill-extrusion-height': ['get', 'height'],
+                  'fill-extrusion-base': 0,
+                  'fill-extrusion-opacity': 0.85,
+                }
+              });
+            }
+          }}
         />
       </DeckGL>
     </div>

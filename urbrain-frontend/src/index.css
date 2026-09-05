@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -7,11 +8,13 @@
   --color-critical: #EF4444;
   --color-warning: #F59E0B;
   --color-healthy: #10B981;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   body {
     @apply bg-charcoal text-gray-100 antialiased overflow-hidden m-0 p-0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
@@ -30,3 +33,28 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #4B5563; /* gray-600 */
 }
+
+/* Scanline animation used by IncidentCommandPanel */
+@keyframes scan {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0%); }
+}
+
+/* Slow pulse for pending events */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 2.5s ease-in-out infinite;
+}
+
+/* Number counting animation */
+@keyframes count-flash {
+  0% { color: #EF4444; text-shadow: 0 0 8px rgba(239,68,68,0.8); }
+  100% { color: inherit; text-shadow: none; }
+}
+.animate-count-flash {
+  animation: count-flash 1s ease-out forwards;
+}
+

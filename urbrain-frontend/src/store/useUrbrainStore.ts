@@ -52,21 +52,33 @@ export interface ViewState {
   transitionInterpolator?: any;
 }
 
+export type ToastType = 'detect' | 'verify' | 'verified' | 'action';
+
+export interface DemoToast {
+  message: string;
+  type: ToastType;
+  id: number; // unique ID so re-firing the same type still triggers AnimatePresence
+}
+
 interface UrbrainState {
   buses: Bus[];
   events: Event[];
   segments: RoadSegment[];
   activeIncident: Incident | null;
+  selectedBus: Bus | null;
   isConnected: boolean;
   is3DMode: boolean;
   viewState: ViewState;
+  demoToast: DemoToast | null;
   setBuses: (buses: Bus[]) => void;
   setEvents: (events: Event[]) => void;
   setSegments: (segments: RoadSegment[]) => void;
   setActiveIncident: (incident: Incident | null) => void;
+  setSelectedBus: (bus: Bus | null) => void;
   setConnected: (status: boolean) => void;
   set3DMode: (status: boolean) => void;
   setViewState: (viewState: ViewState) => void;
+  setDemoToast: (toast: DemoToast | null) => void;
 }
 
 export const useUrbrainStore = create<UrbrainState>((set) => ({
@@ -74,8 +86,10 @@ export const useUrbrainStore = create<UrbrainState>((set) => ({
   events: [],
   segments: [],
   activeIncident: null,
+  selectedBus: null,
   isConnected: false,
   is3DMode: false,
+  demoToast: null,
   viewState: {
     longitude: 76.7794,
     latitude: 30.7333,
@@ -87,7 +101,9 @@ export const useUrbrainStore = create<UrbrainState>((set) => ({
   setEvents: (events) => set({ events }),
   setSegments: (segments) => set({ segments }),
   setActiveIncident: (incident) => set({ activeIncident: incident }),
+  setSelectedBus: (bus) => set({ selectedBus: bus }),
   setConnected: (status) => set({ isConnected: status }),
   set3DMode: (status) => set({ is3DMode: status }),
   setViewState: (viewState) => set({ viewState }),
+  setDemoToast: (toast) => set({ demoToast: toast }),
 }));

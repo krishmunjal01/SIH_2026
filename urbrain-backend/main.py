@@ -1,12 +1,14 @@
 import asyncio
-import json
-import random
-from datetime import datetime, timedelta
-from fastapi import FastAPI, WebSocket
+from datetime import datetime
+from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import uvicorn
+from typing import List, Optional
 
-app = FastAPI(title="URBRAIN Demo Backend")
+from engine.correlation import CorrelationEngine
+
+app = FastAPI(title="URBRAIN Ingestion API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,81 +18,96 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Chandigarh bounding box for demo data
-LAT_MIN, LAT_MAX = 30.7000, 30.7600
-LON_MIN, LON_MAX = 76.7500, 76.8200
+# Global Correlation Engine instance
+correlation_engine = CorrelationEngine()
 
-def random_lat_lon():
-    return {
-        "latitude": random.uniform(LAT_MIN, LAT_MAX),
-        "longitude": random.uniform(LON_MIN, LON_MAX)
-    }
+# Connected detection WebSocket clients (browsers watching the camera panel)
+detection_clients: list = []
 
-class DemoEngine:
-    def __init__(self):
-        self.buses = [self.init_bus(f"BUS-{str(i).zfill(3)}") for i in range(1, 301)]
-        self.events = []
-        
-    def init_bus(self, bus_id):
-        return {
-            "id": bus_id,
-            "route": f"Route {random.randint(1, 50)}",
-            **random_lat_lon(),
-            "speed": random.randint(0, 60),
-            "status": "ACTIVE",
-            "edgeStatus": "ONLINE" if random.random() > 0.05 else "SYNCING",
-            "cameras": 5,
-            "heading": random.randint(0, 360)
-        }
-        
-    def generate_events(self):
-        if random.random() > 0.7:
-            bus = random.choice(self.buses)
-            event_type = random.choice(["POTHOLE", "CONGESTION", "PEDESTRIAN_RISK", "HIT_AND_RUN"])
-            severity = "HIGH" if event_type == "HIT_AND_RUN" else random.choice(["LOW", "MEDIUM", "HIGH"])
-            
-            event = {
-                "id": f"EVT-{random.randint(1000, 9999)}",
-                "type": event_type,
-                "latitude": bus["latitude"],
-                "longitude": bus["longitude"],
-                "confidence": random.randint(85, 98),
-                "severity": severity,
-                "busId": bus["id"],
-                "timestamp": datetime.now().isoformat()
-            }
-            self.events.append(event)
-            # Keep only recent events
-            if len(self.events) > 100:
-                self.events.pop(0)
+# --- Pydantic Models for Ingestion ---
+class TelemetryData(BaseModel):
+    busId: str
+    latitude: float
+    longitude: float
+    speed: float
+    heading: float
+    route: str
+    edgeStatus: str = "ONLINE"
+    cameras: int = 4
 
-    def tick(self):
-        # Update bus positions
-        for bus in self.buses:
-            if bus["status"] == "ACTIVE":
-                # Move slightly
-                bus["latitude"] += random.uniform(-0.0005, 0.0005)
-                bus["longitude"] += random.uniform(-0.0005, 0.0005)
-                bus["speed"] = max(0, min(80, bus["speed"] + random.randint(-5, 5)))
-                bus["heading"] = (bus["heading"] + random.randint(-10, 10)) % 360
-        
-        self.generate_events()
-        
-        return {
-            "buses": self.buses,
-            "events": self.events[-10:] # send latest 10 events
-        }
+class EventDetection(BaseModel):
+    busId: str
+    type: str # "POTHOLE", "HIT_AND_RUN", "CONGESTION"
+    latitude: float
+    longitude: float
+    confidence: int
+    severity: str # "LOW", "MEDIUM", "HIGH"
 
-engine = DemoEngine()
+# --- API Endpoints ---
+
+@app.post("/api/telemetry")
+async def post_telemetry(data: TelemetryData):
+    # This endpoint is hit at 1Hz by the Edge AI on the bus
+    correlation_engine.update_bus_telemetry(data.dict())
+    return {"status": "success"}
+
+@app.post("/api/events")
+async def post_event(data: EventDetection):
+    # This endpoint is hit when YOLO detects a pothole/hazard
+    event_dict = data.dict()
+    event_dict['timestamp'] = datetime.now().isoformat()
+    correlation_engine.process_new_event(event_dict)
+    return {"status": "success", "message": "Event processed and correlated"}
+
+
+# --- WebSocket for LIVE bounding-box detections (from friend's YOLO model) ---
+
+class DetectionPayload(BaseModel):
+    busId: str
+    detections: list  # [{label, confidence, x, y, w, h}]
+
+@app.post("/api/detections")
+async def post_detections(data: DetectionPayload):
+    """Your friend's Edge AI script POSTs bounding boxes here at ~10Hz.
+    We instantly broadcast them to all connected React frontends."""
+    payload = {"detections": data.detections, "busId": data.busId}
+    dead = []
+    for ws in detection_clients:
+        try:
+            await ws.send_json(payload)
+        except Exception:
+            dead.append(ws)
+    for ws in dead:
+        detection_clients.remove(ws)
+    return {"status": "ok", "broadcasted_to": len(detection_clients)}
+
+@app.websocket("/ws/detections")
+async def detections_ws(websocket: WebSocket):
+    """React frontend connects here to receive live YOLO bounding boxes."""
+    await websocket.accept()
+    detection_clients.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()  # Keep alive
+    except Exception:
+        if websocket in detection_clients:
+            detection_clients.remove(websocket)
+
+# --- WebSocket Bridge for React Frontend ---
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
-            data = engine.tick()
+            # Stream the global state to the dashboard at 1Hz
+            data = {
+                "buses": list(correlation_engine.get_all_buses().values()),
+                "events": correlation_engine.get_active_events(),
+                "segments": correlation_engine.get_road_segments()
+            }
             await websocket.send_json(data)
-            await asyncio.sleep(1.0) # 1 update per second
+            await asyncio.sleep(1.0)
     except Exception as e:
         print(f"WebSocket closed: {e}")
 

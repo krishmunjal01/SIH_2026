@@ -9,6 +9,8 @@ import IncidentCommandPanel from './components/panels/IncidentCommandPanel';
 import FleetPanel from './components/panels/FleetPanel';
 import InfrastructurePanel from './components/panels/InfrastructurePanel';
 import IncidentLogPanel from './components/panels/IncidentLogPanel';
+import CameraMatrixPanel from './components/panels/CameraMatrixPanel';
+import ToastNotification from './components/panels/ToastNotification';
 import { LayoutDashboard, Bus, Map as MapIcon, Route, ShieldAlert, ChevronRight, ChevronLeft, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -150,7 +152,11 @@ function App() {
           {activeTab === 'incidents' && <IncidentLogPanel />}
 
           <IncidentCommandPanel />
+          <CameraMatrixPanel />
         </div>
+
+          {/* Global toast — rendered outside the map div so it sits above everything */}
+          <ToastNotification />
 
       </main>
     </div>
