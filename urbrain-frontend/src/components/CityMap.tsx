@@ -1,7 +1,8 @@
 // React imports removed as unused
 import Map from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
-import { IconLayer, PathLayer, ScatterplotLayer } from '@deck.gl/layers';
+import { IconLayer, PathLayer, ScatterplotLayer, GeoJsonLayer } from '@deck.gl/layers';
+import { ScenegraphLayer } from '@deck.gl/mesh-layers';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useUrbrainStore } from '../store/useUrbrainStore';
 
@@ -26,10 +27,26 @@ export default function CityMap() {
   const activeIncident = useUrbrainStore(state => state.activeIncident);
   const viewState = useUrbrainStore(state => state.viewState);
   const setViewState = useUrbrainStore(state => state.setViewState);
+  const is3DMode = useUrbrainStore(state => state.is3DMode);
 
   const layers = [
-    new IconLayer({
-      id: 'buses-layer',
+    is3DMode 
+      ? new ScenegraphLayer({
+          id: 'buses-3d-layer',
+          data: buses,
+          pickable: true,
+          scenegraph: '/scene.glb',
+          getPosition: d => [d.longitude, d.latitude, 0],
+          getOrientation: d => [0, -d.heading + 180, 90], // Flipped 180 degrees so they face forward (the model was natively pointing South)
+          sizeScale: 20, // Increased size because this new model has a different native scale
+          _lighting: 'pbr', // Restored PBR lighting so textures and materials render correctly!
+          transitions: {
+            getPosition: { duration: 1000, easing: (t: number) => t }
+            // Removed getOrientation transition to prevent 180-degree gimbal lock bugs when turning around
+          }
+        })
+      : new IconLayer({
+          id: 'buses-layer',
       data: buses,
       pickable: true,
       iconAtlas: NAV_ICON_URL,
@@ -102,6 +119,9 @@ export default function CityMap() {
       getWidth: d => 3
     })
   ];
+
+  // Temporarily removed the placeholder GeoJson building layer 
+  // as it may have been causing WebGL crashes due to invalid geometry types.
 
   if (activeIncident && activeIncident.active) {
     layers.push(

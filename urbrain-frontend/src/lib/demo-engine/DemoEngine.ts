@@ -115,7 +115,9 @@ class DemoEngine {
         confidence: 92,
         severity: 'HIGH',
         busId: 'BUS-002',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: 'VERIFIED',
+        verifyingBuses: ['BUS-002', 'BUS-003']
       },
       {
         id: 'EVT-002',
@@ -125,7 +127,9 @@ class DemoEngine {
         confidence: 88,
         severity: 'MEDIUM',
         busId: 'BUS-005',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: 'VERIFIED',
+        verifyingBuses: ['BUS-005', 'BUS-008']
       }
     ];
 
@@ -136,6 +140,28 @@ class DemoEngine {
       path: route,
       healthScore: 100 - (idx * 20) // Give them initial different scores: 100, 80, 60
     }));
+  }
+
+  public triggerPotholeDetection(busId: string) {
+    const bus = this.buses.find(b => b.id === busId);
+    if (!bus) return;
+
+    // Spawn a pending pothole at the bus's location
+    const incident: Event = {
+      id: `EVT-${Date.now()}`,
+      type: 'Pothole',
+      latitude: bus.latitude,
+      longitude: bus.longitude,
+      confidence: 94,
+      severity: 'HIGH',
+      busId: bus.id,
+      timestamp: new Date().toISOString(),
+      status: 'PENDING',
+      verifyingBuses: [bus.id]
+    };
+
+    this.events.push(incident);
+    useUrbrainStore.getState().setEvents([...this.events]);
   }
 
   public triggerHitAndRun() {
@@ -236,10 +262,29 @@ class DemoEngine {
       bus.heading = getHeading(p1[1], p1[0], p2[1], p2[0]);
     });
 
-    // Update road health dynamically (if an event is near a segment, drop its health slowly)
+    // Cross-bus verification logic
+    this.events.forEach(evt => {
+      if (evt.status === 'PENDING') {
+        this.buses.forEach(bus => {
+          if (!evt.verifyingBuses.includes(bus.id)) {
+            const dist = getDistance(bus.latitude, bus.longitude, evt.latitude, evt.longitude);
+            if (dist < 0.05) { // 50 meters
+              evt.verifyingBuses.push(bus.id);
+            }
+          }
+        });
+        
+        if (evt.verifyingBuses.length >= 2) {
+          evt.status = 'VERIFIED';
+        }
+      }
+    });
+
+    // Update road health dynamically (if a VERIFIED event is near a segment, drop its health slowly)
     this.segments.forEach(segment => {
       let isDegrading = false;
       this.events.forEach(evt => {
+        if (evt.status !== 'VERIFIED') return;
         // Simple check: is event near the first waypoint of the segment
         const dist = getDistance(segment.path[0][1], segment.path[0][0], evt.latitude, evt.longitude);
         if (dist < 2.0) { // arbitrary wide radius for demo effect
@@ -276,8 +321,8 @@ class DemoEngine {
     });
 
     store.setBuses(cleanBuses);
-    if (store.events.length === 0) store.setEvents(this.events);
-    if (store.segments.length === 0) store.setSegments([...this.segments]);
+    store.setEvents([...this.events]);
+    store.setSegments([...this.segments]);
   }
 }
 

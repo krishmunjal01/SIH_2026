@@ -21,6 +21,8 @@ export interface Event {
   severity: string;
   busId: string;
   timestamp: string;
+  status: 'PENDING' | 'VERIFIED';
+  verifyingBuses: string[];
 }
 
 export interface RoadSegment {
@@ -56,12 +58,14 @@ interface UrbrainState {
   segments: RoadSegment[];
   activeIncident: Incident | null;
   isConnected: boolean;
+  is3DMode: boolean;
   viewState: ViewState;
   setBuses: (buses: Bus[]) => void;
   setEvents: (events: Event[]) => void;
   setSegments: (segments: RoadSegment[]) => void;
   setActiveIncident: (incident: Incident | null) => void;
   setConnected: (status: boolean) => void;
+  set3DMode: (status: boolean) => void;
   setViewState: (viewState: ViewState) => void;
 }
 
@@ -71,6 +75,7 @@ export const useUrbrainStore = create<UrbrainState>((set) => ({
   segments: [],
   activeIncident: null,
   isConnected: false,
+  is3DMode: false,
   viewState: {
     longitude: 76.7794,
     latitude: 30.7333,
@@ -83,5 +88,6 @@ export const useUrbrainStore = create<UrbrainState>((set) => ({
   setSegments: (segments) => set({ segments }),
   setActiveIncident: (incident) => set({ activeIncident: incident }),
   setConnected: (status) => set({ isConnected: status }),
+  set3DMode: (status) => set({ is3DMode: status }),
   setViewState: (viewState) => set({ viewState }),
 }));

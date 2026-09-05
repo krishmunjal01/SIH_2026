@@ -42,9 +42,16 @@ export default function InfrastructurePanel() {
                 <span>Corridor operating optimally.</span>
               </div>
             ) : (
-              <div className="flex items-center space-x-2 text-gray-400 text-xs">
-                <AlertTriangle size={14} className={seg.healthScore < 50 ? 'text-critical' : 'text-warning'} />
-                <span>Structural degradation detected on route.</span>
+              <div className="flex flex-col space-y-1">
+                <div className="flex items-center space-x-2 text-gray-400 text-xs">
+                  <AlertTriangle size={14} className={seg.healthScore < 50 ? 'text-critical' : 'text-warning'} />
+                  <span>Structural degradation detected on route.</span>
+                </div>
+                {seg.healthScore < 60 && (
+                  <div className="text-[11px] font-mono mt-1 text-gray-500">
+                    <span className="text-gray-400">ETA Impact:</span> Expected 10:45 AM -&gt; <span className="text-critical">Revised 10:53 AM</span>
+                  </div>
+                )}
               </div>
             )}
           </div>

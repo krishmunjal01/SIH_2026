@@ -26,9 +26,11 @@ export default function DemoController() {
       transitionInterpolator: new FlyToInterpolator({ speed: 1.2 })
     });
 
-    // 3. (Optional) We could also trigger a fake event injection here,
-    // but DemoEngine is currently handling static event degradation.
-    // For a real pitch, this button would instruct DemoEngine to spawn the pothole!
+    // 3. Spawn a PENDING pothole at this bus's location after a slight delay
+    // The delay gives the camera time to arrive before the event pops up.
+    setTimeout(() => {
+      demoEngine.triggerPotholeDetection(targetBus.id);
+    }, 1500);
   };
 
   const triggerHitAndRunSequence = () => {

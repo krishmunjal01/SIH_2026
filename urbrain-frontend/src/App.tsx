@@ -10,6 +10,7 @@ import FleetPanel from './components/panels/FleetPanel';
 import InfrastructurePanel from './components/panels/InfrastructurePanel';
 import IncidentLogPanel from './components/panels/IncidentLogPanel';
 import { LayoutDashboard, Bus, Map as MapIcon, Route, ShieldAlert, ChevronRight, ChevronLeft, Activity } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // const SOCKET_URL = 'http://localhost:8000';
 
@@ -18,6 +19,11 @@ function App() {
   const buses = useUrbrainStore(state => state.buses);
   const events = useUrbrainStore(state => state.events);
   const isConnected = useUrbrainStore(state => state.isConnected);
+  const is3DMode = useUrbrainStore(state => state.is3DMode);
+  const set3DMode = useUrbrainStore(state => state.set3DMode);
+  const viewState = useUrbrainStore(state => state.viewState);
+  const setViewState = useUrbrainStore(state => state.setViewState);
+  const activeIncident = useUrbrainStore(state => state.activeIncident);
   
   const [showRightPanels, setShowRightPanels] = useState(true);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'fleet' | 'map' | 'route' | 'incidents'>('dashboard');
@@ -75,12 +81,47 @@ function App() {
               <span className="font-mono text-warning">{events.length}</span>
               <span className="text-gray-400 text-xs uppercase">Alerts</span>
             </div>
+
+            <div className="w-px h-6 bg-gray-700 mx-2"></div>
+            
+            <button 
+              onClick={() => {
+                const newMode = !is3DMode;
+                set3DMode(newMode);
+                setViewState({
+                  ...viewState,
+                  pitch: newMode ? 60 : 45,
+                  bearing: newMode ? 30 : 0,
+                  zoom: newMode ? 15.5 : 13
+                });
+              }}
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-md border text-xs font-bold transition-all duration-300 ${
+                is3DMode 
+                  ? 'bg-accent/20 border-accent text-accent shadow-[0_0_15px_rgba(59,130,246,0.4)]' 
+                  : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500'
+              }`}
+            >
+              <div className={`w-2 h-2 rounded-full ${is3DMode ? 'bg-accent animate-pulse' : 'bg-gray-500'}`}></div>
+              <span>{is3DMode ? '3D TWIN: ON' : '3D TWIN: OFF'}</span>
+            </button>
           </div>
         </header>
 
         {/* 3D Map Area */}
         <div className="flex-1 relative w-full h-full">
           <CityMap />
+
+          <AnimatePresence>
+            {activeIncident && activeIncident.active && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.1, 0.4, 0.1] }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="absolute inset-0 pointer-events-none shadow-[inset_0_0_250px_rgba(239,68,68,0.7)] z-10"
+              />
+            )}
+          </AnimatePresence>
           
           {/* Conditionally Render Toggle Button ONLY for Dashboard tab */}
           {activeTab === 'dashboard' && (

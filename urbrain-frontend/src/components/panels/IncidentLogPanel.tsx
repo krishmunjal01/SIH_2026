@@ -21,14 +21,21 @@ export default function IncidentLogPanel() {
           <div className="text-gray-500 text-sm text-center mt-10">No critical incidents logged.</div>
         ) : (
           events.map((event) => (
-            <div key={event.id} className="bg-gray-900/80 rounded-xl p-3 border-l-4 border-gray-800 border-l-warning hover:border-l-critical transition-colors cursor-pointer group">
+            <div key={event.id} className={`bg-gray-900/80 rounded-xl p-3 border-l-4 border-gray-800 transition-colors cursor-pointer group ${event.status === 'VERIFIED' ? 'border-l-critical' : 'border-l-warning animate-pulse-slow'}`}>
               <div className="flex justify-between items-center mb-1">
                 <span className="font-mono font-bold text-gray-200 text-sm">{event.id}</span>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                  event.severity === 'HIGH' ? 'bg-critical/20 text-critical' : 'bg-warning/20 text-warning'
-                }`}>
-                  {event.severity}
-                </span>
+                <div className="flex space-x-2">
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                    event.status === 'VERIFIED' ? 'bg-critical/20 text-critical' : 'bg-warning/20 text-warning'
+                  }`}>
+                    {event.status}
+                  </span>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                    event.severity === 'HIGH' ? 'bg-critical/20 text-critical' : 'bg-warning/20 text-warning'
+                  }`}>
+                    {event.severity}
+                  </span>
+                </div>
               </div>
               
               <div className="flex items-center space-x-2 text-xs text-gray-300 font-semibold mb-2">
