@@ -54,3 +54,6 @@ ENV/
 *.sw?
 .DS_Store
 *.local
+
+# Documentation
+/*.md
