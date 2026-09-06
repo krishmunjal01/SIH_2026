@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Video, Cpu, Thermometer, Wifi, Camera, Activity, Maximize2, Eye, AlertTriangle } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
-// Simulated camera feed images (replace with real RTSP stream URLs when available)
+// Simulated camera feed videos (using the provided 1.mp4 and 2.mp4 with CSS cropping)
 const CAMERA_FEEDS = {
-  front: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1280&h=720&fit=crop',
-  left:  'https://images.unsplash.com/photo-1464219789935-c2d9d9aba644?w=1280&h=720&fit=crop',
-  right: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1280&h=720&fit=crop',
-  rear:  'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1280&h=720&fit=crop',
-  cabin: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=1280&h=720&fit=crop',
+  front: { url: '/1_opt.mp4', position: 'center center' },
+  left:  { url: '/1_opt.mp4', position: 'left center' },
+  right: { url: '/1_opt.mp4', position: 'right center' },
+  rear:  { url: '/2_opt.mp4', position: 'left center' },
+  cabin: { url: '/2_opt.mp4', position: 'center center' },
 };
 
 const CAMERA_LABELS = [
@@ -18,12 +18,6 @@ const CAMERA_LABELS = [
   { key: 'right', label: 'RIGHT CAM', color: '#10b981' },
   { key: 'rear',  label: 'REAR CAM',  color: '#f59e0b' },
   { key: 'cabin', label: 'CABIN CAM', color: '#8b5cf6' },
-];
-
-// Simulated YOLO bounding boxes for Front Cam (these will be replaced by real WebSocket data from the friend's model)
-const SIMULATED_DETECTIONS = [
-  { label: 'Pothole', confidence: 94, x: 35, y: 55, w: 18, h: 10, color: '#ef4444' },
-  { label: 'Crack',   confidence: 87, x: 60, y: 65, w: 12, h:  7, color: '#f59e0b' },
 ];
 
 interface Detection {
@@ -37,24 +31,7 @@ interface Detection {
 }
 
 function FrontCamOverlay({ liveDetections }: { liveDetections: Detection[] }) {
-  const [visible, setVisible] = useState(true);
-  const [activeBoxes, setActiveBoxes] = useState<Detection[]>([]);
-
-  // Simulate YOLO detections appearing/disappearing every few seconds
-  useEffect(() => {
-    const cycle = () => {
-      const count = Math.floor(Math.random() * 2) + 1;
-      setActiveBoxes(SIMULATED_DETECTIONS.slice(0, count));
-      setVisible(true);
-      setTimeout(() => setVisible(false), 2000 + Math.random() * 2000);
-    };
-    cycle();
-    const interval = setInterval(cycle, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Prefer real detections from the friend's model over simulated ones
-  const boxes = liveDetections.length > 0 ? liveDetections : (visible ? activeBoxes : []);
+  const boxes = liveDetections;
 
   return (
     <>
@@ -207,10 +184,11 @@ export default function CameraMatrixPanel() {
 
             {/* Feed */}
             <div className="flex-1 relative overflow-hidden">
-              <img
-                src={CAMERA_FEEDS[expandedCamera as keyof typeof CAMERA_FEEDS]}
-                alt={expandedCamera}
+              <video
+                src={CAMERA_FEEDS[expandedCamera as keyof typeof CAMERA_FEEDS].url}
                 className="absolute inset-0 w-full h-full object-cover"
+                style={{ objectPosition: CAMERA_FEEDS[expandedCamera as keyof typeof CAMERA_FEEDS].position }}
+                autoPlay loop muted playsInline
               />
               {/* Scanline */}
               <div className="absolute inset-0 pointer-events-none opacity-10"
@@ -275,7 +253,12 @@ export default function CameraMatrixPanel() {
                     onClick={() => setExpandedCamera(cam.key)}
                     className="relative rounded-xl overflow-hidden border border-gray-700/40 cursor-pointer hover:border-accent/60 transition-all group"
                   >
-                    <img src={CAMERA_FEEDS[cam.key as keyof typeof CAMERA_FEEDS]} alt={cam.label} className="w-full h-full object-cover" />
+                    <video 
+                      src={CAMERA_FEEDS[cam.key as keyof typeof CAMERA_FEEDS].url} 
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: CAMERA_FEEDS[cam.key as keyof typeof CAMERA_FEEDS].position }}
+                      autoPlay loop muted playsInline
+                    />
                     {/* Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     {/* LIVE */}
