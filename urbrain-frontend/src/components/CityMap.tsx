@@ -6,6 +6,7 @@ import { ScenegraphLayer } from '@deck.gl/mesh-layers';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useUrbrainStore } from '../store/useUrbrainStore';
 import maplibregl from 'maplibre-gl';
+// @ts-expect-error - Vite specific import suffix that tsc doesn't recognize
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 // Fix for Vite production build Web Worker issues
@@ -178,6 +179,14 @@ export default function CityMap() {
         <Map 
           mapStyle={MAP_STYLE} 
           style={{ width: '100vw', height: '100vh' }}
+          transformRequest={(url, resourceType) => {
+            // On Vercel, the Protomaps public demo key gets a 403 Forbidden because it's restricted to localhost.
+            // We use a Vercel Serverless Function proxy (/api/protomaps) to bypass this restriction for the demo!
+            if (url.includes('protomaps.com') && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+              return { url: `/api/protomaps?url=${encodeURIComponent(url)}` };
+            }
+            return { url };
+          }}
           onLoad={(e) => {
             const map = e.target;
             if (!map.getSource('openmaptiles')) {
