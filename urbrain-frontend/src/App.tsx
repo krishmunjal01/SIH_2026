@@ -46,9 +46,24 @@ function App() {
       
       {/* Navigation Rail */}
       <nav className="w-16 flex flex-col items-center py-4 bg-white border-r border-gray-300 z-50">
-        <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center mb-8 font-bold text-lg">
-          U
+        {/* Logo: "U" with hidden eye pupil — reads as both a U and a stylized eye */}
+        <div className="w-10 h-10 rounded-xl mb-8 flex items-center justify-center shadow-md overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f2a6e 0%, #1a4fd6 60%, #38bdf8 100%)' }}>
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* The U shape */}
+            <path
+              d="M5 4 L5 16 Q5 22 13 22 Q21 22 21 16 L21 4"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+            {/* Eye pupil inside the open bowl of the U */}
+            <circle cx="13" cy="17" r="2.2" fill="white" opacity="0.95"/>
+            <circle cx="13" cy="17" r="1" fill="#38bdf8"/>
+          </svg>
         </div>
+
         
         <div className="flex flex-col space-y-6">
           <NavItem icon={<LayoutDashboard size={24} />} active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
