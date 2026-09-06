@@ -47,6 +47,7 @@ export default function CityMap() {
           scenegraph: '/scene.glb',
           getPosition: d => [d.longitude, d.latitude, 0],
           getOrientation: d => [0, -d.heading + 180, 90], // Flipped 180 degrees so they face forward (the model was natively pointing South)
+          getTranslation: [-1.2, 0, 0], // Shift the visual model left by 1.2 units to fix off-center origin in the .glb file
           sizeScale: 20, // Increased size because this new model has a different native scale
           _lighting: 'pbr', // Restored PBR lighting so textures and materials render correctly!
           onClick: (info: any) => { if (info.object) setSelectedBus(info.object); },
