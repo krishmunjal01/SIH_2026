@@ -71,7 +71,7 @@ export default function RoadIntelligencePanel() {
         {criticalSegments.map((seg) => {
           // Find if there are verified defects for this segment
           const segEvents = events.filter(e => e.status === 'VERIFIED');
-          const defectCount = seg.name.includes('42') ? segEvents.length : 0;
+          const defectCount = seg.name.includes('Madhya Marg') ? segEvents.length : 0;
           const degrading = seg.healthScore < 70;
           
           return (
