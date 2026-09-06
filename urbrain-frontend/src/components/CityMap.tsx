@@ -5,8 +5,7 @@ import { IconLayer, PathLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { ScenegraphLayer } from '@deck.gl/mesh-layers';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useUrbrainStore } from '../store/useUrbrainStore';
-import maplibregl from 'maplibre-gl';
-// @ts-expect-error - Vite specific import suffix that tsc doesn't recognize
+import * as maplibregl from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 // Fix for Vite production build Web Worker issues
