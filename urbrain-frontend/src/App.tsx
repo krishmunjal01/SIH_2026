@@ -27,7 +27,7 @@ function App() {
   const setViewState = useUrbrainStore(state => state.setViewState);
   const activeIncident = useUrbrainStore(state => state.activeIncident);
   
-  const [showRightPanels, setShowRightPanels] = useState(true);
+  const [showRightPanels, setShowRightPanels] = useState(false);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'fleet' | 'map' | 'route' | 'incidents'>('dashboard');
 
   useEffect(() => {
