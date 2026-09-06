@@ -89,8 +89,8 @@ function CabinCamOverlay() {
             exit={{ opacity: 0, y: 10 }}
             className="flex items-center space-x-2 bg-critical/90 backdrop-blur-sm px-4 py-2 rounded-xl border border-critical"
           >
-            <AlertTriangle size={16} className="text-white animate-pulse" />
-            <span className="text-sm font-bold text-white">⚠️ DROWSINESS DETECTED — Driver Safety Alert</span>
+            <AlertTriangle size={16} className="text-gray-900 animate-pulse" />
+            <span className="text-sm font-bold text-gray-900">⚠️ DROWSINESS DETECTED — Driver Safety Alert</span>
           </motion.div>
         ) : (
           <motion.div
@@ -98,11 +98,11 @@ function CabinCamOverlay() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="flex items-center space-x-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-healthy/40"
+            className="flex items-center space-x-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-healthy/40"
           >
             <Eye size={16} className="text-healthy" />
             <span className="text-sm font-bold text-healthy">DRIVER MONITORING: ATTENTIVE ✅</span>
-            <span className="ml-auto text-xs text-gray-400">Eye Closure: 12% · Head Pose: Normal</span>
+            <span className="ml-auto text-xs text-gray-500">Eye Closure: 12% · Head Pose: Normal</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -154,17 +154,17 @@ export default function CameraMatrixPanel() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col"
+            className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-xl flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-gray-700/50 bg-navy/80 shrink-0">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200/50 bg-white/80 shrink-0">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-critical animate-pulse" />
-                  <span className="text-sm font-bold text-white tracking-wider">LIVE</span>
+                  <span className="text-sm font-bold text-gray-900 tracking-wider">LIVE</span>
                 </div>
-                <span className="text-base font-bold text-white">{selectedBus.id}</span>
-                <span className="text-sm text-gray-400">—</span>
+                <span className="text-base font-bold text-gray-900">{selectedBus.id}</span>
+                <span className="text-sm text-gray-500">—</span>
                 <span className="text-sm font-bold text-accent">
                   {CAMERA_LABELS.find(c => c.key === expandedCamera)?.label}
                 </span>
@@ -172,11 +172,11 @@ export default function CameraMatrixPanel() {
                   <span className="text-xs px-2 py-0.5 rounded bg-accent/20 text-accent">🤖 AI DETECTION ACTIVE</span>
                 )}
               </div>
-              <div className="flex items-center space-x-6 text-xs text-gray-400">
+              <div className="flex items-center space-x-6 text-xs text-gray-500">
                 <div className="flex items-center space-x-1.5"><Activity size={13} className="text-accent" /><span>{selectedBus.speed.toFixed(0)} km/h</span></div>
                 <div className="flex items-center space-x-1.5"><Cpu size={13} className="text-warning" /><span>GPU 62°C</span></div>
                 <div className="flex items-center space-x-1.5"><Wifi size={13} className="text-healthy" /><span>5G · 42ms</span></div>
-                <button onClick={() => setExpandedCamera(null)} className="ml-4 p-2 rounded-lg bg-gray-800 hover:bg-critical/30 text-gray-400 hover:text-critical transition-all">
+                <button onClick={() => setExpandedCamera(null)} className="ml-4 p-2 rounded-lg bg-white hover:bg-critical/30 text-gray-500 hover:text-critical transition-all">
                   <X size={18} />
                 </button>
               </div>
@@ -201,7 +201,7 @@ export default function CameraMatrixPanel() {
               {/* Driver monitoring on Cabin Cam */}
               {expandedCamera === 'cabin' && <CabinCamOverlay />}
               {/* Timestamp */}
-              <div className="absolute top-4 right-4 font-mono text-xs text-white/60 bg-black/40 px-2 py-1 rounded">
+              <div className="absolute top-4 right-4 font-mono text-xs text-gray-900/60 bg-white/40 px-2 py-1 rounded">
                 {new Date().toLocaleTimeString()} IST
               </div>
             </div>
@@ -217,25 +217,25 @@ export default function CameraMatrixPanel() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute inset-x-4 bottom-4 z-50 bg-navy/95 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl overflow-hidden"
+            className="absolute inset-x-4 bottom-4 z-50 bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-700/50 bg-charcoal/50">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200/50 bg-slate-50/50">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 rounded-full bg-healthy animate-pulse" />
-                  <h2 className="text-base font-bold tracking-wider text-white">{selectedBus.id}</h2>
+                  <h2 className="text-base font-bold tracking-wider text-gray-900">{selectedBus.id}</h2>
                 </div>
                 <span className="text-xs px-2 py-0.5 rounded bg-accent/20 text-accent font-mono">{selectedBus.route}</span>
                 <span className="text-xs px-2 py-0.5 rounded bg-healthy/20 text-healthy">{selectedBus.status}</span>
               </div>
-              <div className="flex items-center space-x-6 text-xs text-gray-400">
+              <div className="flex items-center space-x-6 text-xs text-gray-500">
                 <div className="flex items-center space-x-1.5"><Activity size={13} className="text-accent" /><span>{selectedBus.speed.toFixed(0)} km/h</span></div>
                 <div className="flex items-center space-x-1.5"><Cpu size={13} className="text-warning" /><span>GPU 62°C</span></div>
                 <div className="flex items-center space-x-1.5"><Thermometer size={13} className="text-critical" /><span>CPU 54°C</span></div>
                 <div className="flex items-center space-x-1.5"><Wifi size={13} className="text-healthy" /><span>5G · 42ms</span></div>
                 <div className="flex items-center space-x-1.5"><Camera size={13} className="text-accent" /><span>{selectedBus.cameras} Active</span></div>
-                <button onClick={() => setSelectedBus(null)} className="ml-2 p-1.5 rounded-lg bg-gray-800 hover:bg-critical/30 text-gray-400 hover:text-critical transition-all">
+                <button onClick={() => setSelectedBus(null)} className="ml-2 p-1.5 rounded-lg bg-white hover:bg-critical/30 text-gray-500 hover:text-critical transition-all">
                   <X size={16} />
                 </button>
               </div>
@@ -251,7 +251,7 @@ export default function CameraMatrixPanel() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.06 }}
                     onClick={() => setExpandedCamera(cam.key)}
-                    className="relative rounded-xl overflow-hidden border border-gray-700/40 cursor-pointer hover:border-accent/60 transition-all group"
+                    className="relative rounded-xl overflow-hidden border border-gray-200/40 cursor-pointer hover:border-accent/60 transition-all group"
                   >
                     <video 
                       src={CAMERA_FEEDS[cam.key as keyof typeof CAMERA_FEEDS].url} 
@@ -262,9 +262,9 @@ export default function CameraMatrixPanel() {
                     {/* Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     {/* LIVE */}
-                    <div className="absolute top-2 left-2 flex items-center space-x-1.5 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-md">
+                    <div className="absolute top-2 left-2 flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-2 py-0.5 rounded-md">
                       <div className="w-1.5 h-1.5 rounded-full bg-critical animate-pulse" />
-                      <span className="text-[10px] font-bold text-white tracking-wider">LIVE</span>
+                      <span className="text-[10px] font-bold text-gray-900 tracking-wider">LIVE</span>
                     </div>
                     {/* AI badge on front cam */}
                     {cam.key === 'front' && (
@@ -276,14 +276,14 @@ export default function CameraMatrixPanel() {
                     <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center justify-between">
                       <div className="flex items-center space-x-1">
                         <Video size={11} style={{ color: cam.color }} />
-                        <span className="text-[10px] font-bold text-white">{cam.label}</span>
+                        <span className="text-[10px] font-bold text-gray-900">{cam.label}</span>
                       </div>
                     </div>
                     {/* Hover expand overlay */}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="flex items-center space-x-2 bg-accent/80 px-3 py-1.5 rounded-lg">
-                        <Maximize2 size={14} className="text-white" />
-                        <span className="text-xs font-bold text-white">Expand</span>
+                        <Maximize2 size={14} className="text-gray-900" />
+                        <span className="text-xs font-bold text-gray-900">Expand</span>
                       </div>
                     </div>
                     {/* Scanline */}

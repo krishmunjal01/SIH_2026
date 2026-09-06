@@ -15,17 +15,17 @@ export default function IncidentCommandPanel() {
           <Target className="animate-pulse" size={20} />
           <h2 className="font-bold tracking-widest text-sm uppercase">Incident Command</h2>
         </div>
-        <span className="bg-critical text-white text-[10px] font-bold px-2 py-1 rounded-sm animate-pulse">
+        <span className="bg-critical text-gray-900 text-[10px] font-bold px-2 py-1 rounded-sm animate-pulse">
           HIT & RUN
         </span>
       </div>
 
-      <div className="bg-charcoal/80 rounded-xl p-4 border border-gray-700/50 relative overflow-hidden">
+      <div className="bg-slate-50/80 rounded-xl p-4 border border-gray-200/50 relative overflow-hidden">
         {/* Subtle scanline effect */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent w-full h-[200%] animate-[scan_3s_ease-in-out_infinite]" />
         
         <div className="relative z-10 flex flex-col items-center justify-center space-y-2">
-          <div className="flex items-center space-x-2 text-gray-400 text-xs font-mono mb-1">
+          <div className="flex items-center space-x-2 text-gray-500 text-xs font-mono mb-1">
             <CarFront size={14} />
             <span>SUSPECT VEHICLE PLATE (ANPR)</span>
           </div>
@@ -36,17 +36,17 @@ export default function IncidentCommandPanel() {
             </span>
           </div>
 
-          <div className="flex w-full justify-between mt-3 text-xs border-t border-gray-700/50 pt-2">
-            <span className="text-gray-400">OCR CONFIDENCE</span>
+          <div className="flex w-full justify-between mt-3 text-xs border-t border-gray-200/50 pt-2">
+            <span className="text-gray-500">OCR CONFIDENCE</span>
             <span className="text-healthy font-bold font-mono">98.4%</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex items-start space-x-3 text-sm text-gray-300 bg-gray-900/50 p-3 rounded-xl border border-gray-800">
+      <div className="mt-4 flex items-start space-x-3 text-sm text-gray-700 bg-gray-100/50 p-3 rounded-xl border border-gray-300">
         <Radio className="text-warning mt-0.5 shrink-0" size={16} />
         <div>
-          <p className="font-semibold text-white mb-1">Ghost Radius Expanding</p>
+          <p className="font-semibold text-gray-900 mb-1">Ghost Radius Expanding</p>
           <p className="text-xs">
             Nearby fleet nodes have automatically entered <span className="text-warning font-bold">SEARCHING</span> mode to locate suspect vehicle.
           </p>

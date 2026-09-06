@@ -42,10 +42,10 @@ function App() {
   }, [setConnected]);
 
   return (
-    <div className="flex h-screen bg-charcoal text-white overflow-hidden font-sans">
+    <div className="flex h-screen bg-slate-50 text-gray-900 overflow-hidden font-sans">
       
       {/* Navigation Rail */}
-      <nav className="w-16 flex flex-col items-center py-4 bg-navy border-r border-gray-800 z-50">
+      <nav className="w-16 flex flex-col items-center py-4 bg-white border-r border-gray-300 z-50">
         <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center mb-8 font-bold text-lg">
           U
         </div>
@@ -62,26 +62,26 @@ function App() {
       <main className="flex-1 flex flex-col relative">
         
         {/* Command Bar */}
-        <header className="h-14 bg-charcoal/90 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-6 z-40 absolute top-0 left-0 right-0">
+        <header className="h-14 bg-slate-50/90 backdrop-blur-md border-b border-gray-300 flex items-center justify-between px-6 z-40 absolute top-0 left-0 right-0">
           <div className="flex items-center space-x-4">
-            <h1 className="font-semibold text-lg tracking-wide text-gray-200">CITY COMMAND</h1>
-            <span className="text-xs bg-gray-800 px-2 py-1 rounded text-gray-400">LIVE URBAN INTELLIGENCE</span>
+            <h1 className="font-semibold text-lg tracking-wide text-gray-900">URBAN EYE</h1>
+            <span className="text-[10px] bg-white px-2 py-1 rounded text-gray-500 uppercase tracking-wider font-bold border border-gray-200">LIVE INTELLIGENCE BY TEAM PRISM</span>
           </div>
 
           <div className="flex items-center space-x-6 text-sm">
             <div className="flex items-center space-x-2">
               <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-healthy animate-pulse' : 'bg-critical'}`}></span>
-              <span className="text-gray-400">NETWORK {isConnected ? '98.4%' : 'OFFLINE'}</span>
+              <span className="text-gray-500">NETWORK {isConnected ? '98.4%' : 'OFFLINE'}</span>
             </div>
             
             <div className="flex items-center space-x-2">
               <span className="font-mono text-accent">{buses.length}</span>
-              <span className="text-gray-400 text-xs uppercase">Active Buses</span>
+              <span className="text-gray-500 text-xs uppercase">Active Buses</span>
             </div>
             
             <div className="flex items-center space-x-2">
               <span className="font-mono text-warning">{events.length}</span>
-              <span className="text-gray-400 text-xs uppercase">Alerts</span>
+              <span className="text-gray-500 text-xs uppercase">Alerts</span>
             </div>
 
             <div className="w-px h-6 bg-gray-700 mx-2"></div>
@@ -100,7 +100,7 @@ function App() {
               className={`flex items-center space-x-2 px-3 py-1.5 rounded-md border text-xs font-bold transition-all duration-300 ${
                 is3DMode 
                   ? 'bg-accent/20 border-accent text-accent shadow-[0_0_15px_rgba(59,130,246,0.4)]' 
-                  : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500'
+                  : 'bg-white border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-500'
               }`}
             >
               <div className={`w-2 h-2 rounded-full ${is3DMode ? 'bg-accent animate-pulse' : 'bg-gray-500'}`}></div>
@@ -129,7 +129,7 @@ function App() {
           {activeTab === 'dashboard' && (
             <button
               onClick={() => setShowRightPanels(!showRightPanels)}
-              className="absolute top-1/2 right-0 -translate-y-1/2 bg-charcoal/90 border border-gray-700 border-r-0 rounded-l-xl p-2 z-50 text-gray-400 hover:text-white transition-colors"
+              className="absolute top-1/2 right-0 -translate-y-1/2 bg-slate-50/90 border border-gray-200 border-r-0 rounded-l-xl p-2 z-50 text-gray-500 hover:text-gray-900 transition-colors"
             >
               {showRightPanels ? <ChevronRight size={24} /> : <div className="flex flex-col items-center"><Activity size={18} className="mb-1 text-accent"/><ChevronLeft size={24} /></div>}
             </button>
@@ -167,7 +167,7 @@ function NavItem({ icon, active = false, onClick }: { icon: React.ReactNode, act
   return (
     <button 
       onClick={onClick}
-      className={`p-2 rounded-xl transition-all duration-200 ${active ? 'bg-accent/20 text-accent shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800'}`}
+      className={`p-2 rounded-xl transition-all duration-200 ${active ? 'bg-accent/20 text-accent shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'text-gray-500 hover:text-gray-700 hover:bg-white'}`}
     >
       {icon}
     </button>

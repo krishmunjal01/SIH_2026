@@ -61,10 +61,10 @@ export default function RoadIntelligencePanel() {
   if (segments.length === 0) return null;
 
   return (
-    <div className="pointer-events-auto shrink-0 w-full self-end bg-navy/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-5">
+    <div className="pointer-events-auto shrink-0 w-full self-end bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl p-5">
       <div className="flex items-center space-x-2 mb-4">
         <Activity className="text-accent" size={20} />
-        <h2 className="text-white font-semibold tracking-wide text-sm">ROAD INTELLIGENCE</h2>
+        <h2 className="text-gray-900 font-semibold tracking-wide text-sm">ROAD INTELLIGENCE</h2>
       </div>
 
       <div className="space-y-3">
@@ -78,10 +78,10 @@ export default function RoadIntelligencePanel() {
             <motion.div 
               layout
               key={seg.id} 
-              className={`bg-charcoal/70 rounded-xl p-3 border transition-colors ${degrading ? 'border-critical/40' : 'border-gray-800'}`}
+              className={`bg-slate-50/70 rounded-xl p-3 border transition-colors ${degrading ? 'border-critical/40' : 'border-gray-300'}`}
             >
               <div className="flex justify-between items-start mb-2">
-                <span className="text-sm font-medium text-gray-200">{seg.name}</span>
+                <span className="text-sm font-medium text-gray-800">{seg.name}</span>
                 
                 <div className={`flex items-center space-x-1.5 text-xs font-bold px-2 py-1 rounded-full ${
                   seg.healthScore > 80 ? 'bg-healthy/20 text-healthy' :
@@ -107,7 +107,7 @@ export default function RoadIntelligencePanel() {
                       <span>{defectCount} VERIFIED DEFECT{defectCount > 1 ? 'S' : ''}</span>
                     </div>
                   ) : (
-                    <div className="flex items-center space-x-1.5 text-gray-400 text-[10px] font-medium uppercase tracking-wider">
+                    <div className="flex items-center space-x-1.5 text-gray-500 text-[10px] font-medium uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 bg-healthy rounded-full" />
                       <span>Normal Wear</span>
                     </div>

@@ -30,7 +30,7 @@ export default function AIActionCenter() {
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: 60 }}
         transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-        className="pointer-events-auto shrink-0 w-full self-end bg-navy/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.2)] overflow-hidden"
+        className="pointer-events-auto shrink-0 w-full self-end bg-white/95 backdrop-blur-xl border border-gray-200/60 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.2)] overflow-hidden"
       >
         {/* Accent top bar */}
         <div className="h-1 w-full bg-gradient-to-r from-accent via-blue-400 to-accent" />
@@ -40,7 +40,7 @@ export default function AIActionCenter() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <Sparkles className="text-accent" size={16} />
-              <span className="text-gray-100 font-bold text-xs tracking-widest uppercase">AI Action Engine</span>
+              <span className="text-gray-900 font-bold text-xs tracking-widest uppercase">AI Action Engine</span>
             </div>
             <motion.div
               animate={{ opacity: [1, 0.4, 1] }}
@@ -54,23 +54,23 @@ export default function AIActionCenter() {
 
           {/* Cause Chain */}
           <div className="space-y-2.5 mb-4">
-            <div className="flex items-start space-x-2.5 bg-charcoal/60 rounded-xl p-3 border border-gray-800">
+            <div className="flex items-start space-x-2.5 bg-slate-50/60 rounded-xl p-3 border border-gray-300">
               <AlertTriangle size={14} className="text-warning mt-0.5 shrink-0" />
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">Road Defect Verified</p>
-                <p className="text-sm text-gray-100 font-medium">
+                <p className="text-xs text-gray-500 mb-0.5">Road Defect Verified</p>
+                <p className="text-sm text-gray-900 font-medium">
                   {verifiedHigh.length} edge node{verifiedHigh.length > 1 ? 's' : ''} confirmed defect on{' '}
-                  <span className="text-white font-bold">{worstSeg?.name ?? 'Route 42 Corridor'}</span>
+                  <span className="text-gray-900 font-bold">{worstSeg?.name ?? 'Route 42 Corridor'}</span>
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-2.5 bg-charcoal/60 rounded-xl p-3 border border-gray-800">
+            <div className="flex items-start space-x-2.5 bg-slate-50/60 rounded-xl p-3 border border-gray-300">
               <TrendingDown size={14} className="text-critical mt-0.5 shrink-0" />
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">Health Degradation</p>
+                <p className="text-xs text-gray-500 mb-0.5">Health Degradation</p>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-400 font-mono">{prevHealth}%</span>
+                  <span className="text-sm text-gray-500 font-mono">{prevHealth}%</span>
                   <ArrowRight size={12} className="text-critical" />
                   <motion.span
                     key={curHealth}
@@ -84,7 +84,7 @@ export default function AIActionCenter() {
                   <span className="text-xs text-critical font-bold">−{delta}pts</span>
                 </div>
                 {/* Mini health bar */}
-                <div className="mt-1.5 w-full bg-gray-900 rounded-full h-1">
+                <div className="mt-1.5 w-full bg-gray-100 rounded-full h-1">
                   <motion.div
                     initial={{ width: `${prevHealth}%` }}
                     animate={{ width: `${curHealth}%` }}
@@ -96,14 +96,14 @@ export default function AIActionCenter() {
             </div>
 
             {/* ETA Impact Panel */}
-            <div className="flex items-start space-x-2.5 bg-charcoal/60 rounded-xl p-3 border border-gray-800">
+            <div className="flex items-start space-x-2.5 bg-slate-50/60 rounded-xl p-3 border border-gray-300">
               <Clock size={14} className="text-warning mt-0.5 shrink-0" />
               <div className="w-full">
-                <p className="text-xs text-gray-400 mb-1.5">Route 42 ETA Impact</p>
+                <p className="text-xs text-gray-500 mb-1.5">Route 42 ETA Impact</p>
                 <div className="flex items-center justify-between">
                   <div className="text-center">
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Expected</p>
-                    <p className="text-sm font-mono font-bold text-gray-300">{etaBase}</p>
+                    <p className="text-sm font-mono font-bold text-gray-700">{etaBase}</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <ArrowRight size={16} className="text-critical" />
@@ -141,7 +141,7 @@ export default function AIActionCenter() {
                 className={`flex-1 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
                   flagged
                     ? 'bg-warning/20 border-warning/40 text-warning'
-                    : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600'
+                    : 'bg-white border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-600'
                 }`}
               >
                 <MapPin size={13} />
@@ -153,7 +153,7 @@ export default function AIActionCenter() {
                 className={`flex-1 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
                   reported
                     ? 'bg-accent/20 border-accent/40 text-accent'
-                    : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600'
+                    : 'bg-white border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-600'
                 }`}
               >
                 <FileText size={13} />

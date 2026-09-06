@@ -33,7 +33,7 @@ const TOAST_CONFIG = {
   },
   action: {
     icon: Sparkles,
-    bg: 'bg-navy border-accent/60',
+    bg: 'bg-white border-accent/60',
     iconColor: 'text-accent',
     dot: 'bg-accent',
     glow: 'shadow-[0_0_35px_rgba(59,130,246,0.5)]',
@@ -75,13 +75,13 @@ export default function ToastNotification() {
               <span className={`text-[10px] font-black tracking-widest uppercase ${cfg.labelColor}`}>
                 {cfg.label}
               </span>
-              <span className="text-xs text-gray-200 font-medium leading-snug mt-0.5 truncate">
+              <span className="text-xs text-gray-800 font-medium leading-snug mt-0.5 truncate">
                 {demoToast.message}
               </span>
             </div>
             <button
               onClick={() => setDemoToast(null)}
-              className="ml-2 shrink-0 text-gray-500 hover:text-gray-200 transition-colors"
+              className="ml-2 shrink-0 text-gray-500 hover:text-gray-800 transition-colors"
             >
               <X size={14} />
             </button>

@@ -12,8 +12,8 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 setWorkerUrl(workerUrl);
 
 
-// Free dark basemap from CartoDB (no API key required)
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+// Free light basemap from CartoDB (no API key required)
+const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 
 // Removed SECTORS array as it is no longer used for PolygonLayer
 
@@ -195,10 +195,10 @@ export default function CityMap() {
                 'source-layer': 'buildings',
                 type: 'fill-extrusion',
                 paint: {
-                  'fill-extrusion-color': '#1e2a4a',
+                  'fill-extrusion-color': '#E2E8F0', // Frosted silver for light theme
                   'fill-extrusion-height': ['get', 'height'],
                   'fill-extrusion-base': 0,
-                  'fill-extrusion-opacity': 0.85,
+                  'fill-extrusion-opacity': 0.75,
                 }
               });
             }
