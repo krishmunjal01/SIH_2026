@@ -21,6 +21,10 @@ app.add_middleware(
 # Global Correlation Engine instance
 correlation_engine = CorrelationEngine()
 
+@app.get("/")
+async def root():
+    return {"message": "URBRAIN Backend is Live! 🚀"}
+
 # Connected detection WebSocket clients (browsers watching the camera panel)
 detection_clients: list = []
 

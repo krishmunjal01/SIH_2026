@@ -124,7 +124,7 @@ export default function CameraMatrixPanel() {
   useEffect(() => {
     if (!selectedBus) return;
     try {
-      const ws = new WebSocket('ws://localhost:8000/ws/detections');
+      const ws = new WebSocket('wss://sih-2026-pqbo.onrender.com/ws/detections');
       wsRef.current = ws;
       ws.onmessage = (event) => {
         try {
