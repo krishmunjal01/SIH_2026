@@ -42,6 +42,7 @@ export default function CityMap() {
   const selectedEvent = useUrbrainStore(state => state.selectedEvent);
   const setSelectedEvent = useUrbrainStore(state => state.setSelectedEvent);
   const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
+  const [dispatchState, setDispatchState] = useState<'idle' | 'confirm' | 'loading' | 'success'>('idle');
 
   const viewport = useMemo(() => new WebMercatorViewport(viewState), [viewState]);
 
@@ -243,13 +244,15 @@ export default function CityMap() {
           }}
         >
           <div className="relative">
-            {/* Close button for popup */}
-            <button 
-              onClick={(e) => { e.stopPropagation(); setSelectedEvent(null); }}
-              className="absolute -top-3 -right-3 z-10 p-1.5 bg-gray-900/80 hover:bg-black rounded-full text-white shadow-lg cursor-pointer transition-colors"
-            >
-              <X size={16} />
-            </button>
+            {/* Close button — hidden during loading/success */}
+            {dispatchState !== 'loading' && dispatchState !== 'success' && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); setDispatchState('idle'); setSelectedEvent(null); }}
+                className="absolute -top-3 -right-3 z-10 p-1.5 bg-gray-900/80 hover:bg-black rounded-full text-white shadow-lg cursor-pointer transition-colors"
+              >
+                <X size={16} />
+              </button>
+            )}
 
             <div 
               className="w-80 bg-white/95 backdrop-blur-md border border-gray-200 shadow-2xl rounded-xl overflow-hidden flex flex-col cursor-default"
@@ -303,16 +306,74 @@ export default function CityMap() {
                     </div>
                   </div>
                 </div>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Custom action logic could go here
-                    setSelectedEvent(null);
-                  }}
-                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm rounded-lg transition-colors shadow-sm tracking-wide cursor-pointer"
-                >
-                  Dispatch Repair Crew
-                </button>
+
+                {/* ── 4-State Dispatch Footer ────────────────────────── */}
+                <div className="transition-all duration-300">
+
+                  {/* State 1: IDLE */}
+                  {dispatchState === 'idle' && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setDispatchState('confirm'); }}
+                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm rounded-lg transition-all shadow-sm tracking-wide cursor-pointer"
+                    >
+                      🔧 Dispatch Repair Crew
+                    </button>
+                  )}
+
+                  {/* State 2: CONFIRM */}
+                  {dispatchState === 'confirm' && (
+                    <div className="space-y-2">
+                      <p className="text-center text-xs text-gray-500 font-medium">
+                        ⚠️ Confirm dispatch to <span className="font-bold text-gray-800">{selectedEvent.busId}'s route</span>?
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDispatchState('idle'); }}
+                          className="flex-1 py-2 border border-gray-300 text-gray-600 hover:bg-gray-100 font-semibold text-sm rounded-lg transition-all cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDispatchState('loading');
+                            // Simulate API call, then show success
+                            setTimeout(() => {
+                              setDispatchState('success');
+                              // Auto-close after success
+                              setTimeout(() => {
+                                setDispatchState('idle');
+                                setSelectedEvent(null);
+                              }, 2500);
+                            }, 1800);
+                          }}
+                          className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg transition-all cursor-pointer shadow-sm"
+                        >
+                          Confirm 🚨
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* State 3: LOADING */}
+                  {dispatchState === 'loading' && (
+                    <div className="w-full py-2.5 bg-amber-500 text-white font-semibold text-sm rounded-lg flex items-center justify-center gap-2 tracking-wide">
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                      </svg>
+                      Contacting Crew...
+                    </div>
+                  )}
+
+                  {/* State 4: SUCCESS */}
+                  {dispatchState === 'success' && (
+                    <div className="w-full py-2.5 bg-green-600 text-white font-semibold text-sm rounded-lg flex items-center justify-center gap-2 tracking-wide shadow-sm animate-pulse">
+                      ✅ Crew Dispatched · ETA 12 min
+                    </div>
+                  )}
+
+                </div>
               </div>
             </div>
             
