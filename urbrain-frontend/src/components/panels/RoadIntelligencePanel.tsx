@@ -61,7 +61,7 @@ export default function RoadIntelligencePanel() {
   if (segments.length === 0) return null;
 
   return (
-    <div className="absolute top-20 right-6 w-80 bg-navy/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-5 z-40">
+    <div className="pointer-events-auto shrink-0 w-full self-end bg-navy/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-5">
       <div className="flex items-center space-x-2 mb-4">
         <Activity className="text-accent" size={20} />
         <h2 className="text-white font-semibold tracking-wide text-sm">ROAD INTELLIGENCE</h2>

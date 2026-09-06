@@ -137,10 +137,10 @@ function App() {
 
           {/* Conditional View Rendering */}
           {activeTab === 'dashboard' && showRightPanels && (
-            <>
+            <div className="absolute right-6 top-20 bottom-4 w-96 flex flex-col gap-4 overflow-y-auto pointer-events-none z-40 pb-20" style={{ scrollbarWidth: 'none' }}>
               <RoadIntelligencePanel />
               <AIActionCenter />
-            </>
+            </div>
           )}
 
           {activeTab === 'dashboard' && (

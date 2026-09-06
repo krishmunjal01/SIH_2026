@@ -5,11 +5,11 @@ import { useState, useEffect, useRef } from 'react';
 
 // Simulated camera feed videos (using the provided 1.mp4 and 2.mp4 with CSS cropping)
 const CAMERA_FEEDS = {
-  front: { url: '/1_opt.mp4', position: 'center center' },
-  left:  { url: '/1_opt.mp4', position: 'left center' },
-  right: { url: '/1_opt.mp4', position: 'right center' },
-  rear:  { url: '/2_opt.mp4', position: 'left center' },
-  cabin: { url: '/2_opt.mp4', position: 'center center' },
+  front: { url: '/1_balanced.mp4', position: 'center center' },
+  left:  { url: '/1_balanced.mp4', position: 'left center' },
+  right: { url: '/1_balanced.mp4', position: 'right center' },
+  rear:  { url: '/2_balanced.mp4', position: 'left center' },
+  cabin: { url: '/2_balanced.mp4', position: 'center center' },
 };
 
 const CAMERA_LABELS = [

@@ -30,7 +30,7 @@ export default function AIActionCenter() {
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: 60 }}
         transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-        className="absolute bottom-8 right-6 w-96 bg-navy/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.2)] overflow-hidden z-40"
+        className="pointer-events-auto shrink-0 w-full self-end bg-navy/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.2)] overflow-hidden"
       >
         {/* Accent top bar */}
         <div className="h-1 w-full bg-gradient-to-r from-accent via-blue-400 to-accent" />
