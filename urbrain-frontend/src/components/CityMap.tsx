@@ -1,6 +1,8 @@
-// React imports removed as unused
+import React, { useState, useMemo } from 'react';
 import Map from 'react-map-gl/maplibre';
+import { Maximize2, X } from 'lucide-react';
 import DeckGL from '@deck.gl/react';
+import { WebMercatorViewport } from '@deck.gl/core';
 import { IconLayer, PathLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { ScenegraphLayer } from '@deck.gl/mesh-layers';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -37,6 +39,22 @@ export default function CityMap() {
   const setViewState = useUrbrainStore(state => state.setViewState);
   const is3DMode = useUrbrainStore(state => state.is3DMode);
   const setSelectedBus = useUrbrainStore(state => state.setSelectedBus);
+  const selectedEvent = useUrbrainStore(state => state.selectedEvent);
+  const setSelectedEvent = useUrbrainStore(state => state.setSelectedEvent);
+  const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
+
+  const viewport = useMemo(() => new WebMercatorViewport(viewState), [viewState]);
+
+  let popupX = 0;
+  let popupY = 0;
+  let isTopAnchor = false;
+  
+  if (selectedEvent) {
+    const projected = viewport.project([selectedEvent.longitude, selectedEvent.latitude]);
+    popupX = projected[0];
+    popupY = projected[1];
+    isTopAnchor = popupY < 380;
+  }
 
   const layers: any[] = [
     is3DMode 
@@ -86,6 +104,7 @@ export default function CityMap() {
       id: 'events-layer',
       data: events,
       pickable: true,
+      onClick: (info: any) => { if (info.object) setSelectedEvent(info.object); },
       iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
       iconMapping: {
         marker: { x: 0, y: 0, width: 128, height: 128, mask: true }
@@ -170,7 +189,12 @@ export default function CityMap() {
         controller={true}
         layers={layers}
         style={{ position: 'absolute' }}
-        getTooltip={({ object }) => object && (object.route ? `Bus: ${object.id}\nSpeed: ${object.speed} km/h` : `Event: ${object.type}\nSeverity: ${object.severity}`)}
+        getTooltip={({ object }) => {
+          if (!object) return null;
+          if (object.route) return `Bus: ${object.id}\nSpeed: ${Math.round(object.speed)} km/h`;
+          if (object.name) return `Route: ${object.name}\nHealth: ${Math.round(object.healthScore)}%`;
+          return `Event: ${object.type}\nSeverity: ${object.severity}`;
+        }}
       >
         <Map 
           mapStyle={MAP_STYLE} 
@@ -206,6 +230,122 @@ export default function CityMap() {
           }}
         />
       </DeckGL>
+
+      {/* Custom Projected Popup Overlay (guarantees clickability above DeckGL) */}
+      {selectedEvent && (
+        <div 
+          className="absolute z-50 pointer-events-auto transition-transform duration-300 ease-out"
+          style={{ 
+            left: popupX, 
+            top: popupY, 
+            transform: isTopAnchor ? 'translate(-50%, 15px)' : 'translate(-50%, -100%)',
+            marginTop: isTopAnchor ? '0' : '-15px' 
+          }}
+        >
+          <div className="relative">
+            {/* Close button for popup */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setSelectedEvent(null); }}
+              className="absolute -top-3 -right-3 z-10 p-1.5 bg-gray-900/80 hover:bg-black rounded-full text-white shadow-lg cursor-pointer transition-colors"
+            >
+              <X size={16} />
+            </button>
+
+            <div 
+              className="w-80 bg-white/95 backdrop-blur-md border border-gray-200 shadow-2xl rounded-xl overflow-hidden flex flex-col cursor-default"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {selectedEvent.imageUrl && (
+                <div 
+                  className="relative h-36 w-full group cursor-pointer"
+                  onClick={(e) => { e.stopPropagation(); setFullScreenImage(selectedEvent.imageUrl!); }}
+                >
+                  <img src={selectedEvent.imageUrl} alt="Road Anomaly" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent"></div>
+                  
+                  {/* Expand icon on hover */}
+                  <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm p-1.5 rounded text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Maximize2 size={16} />
+                  </div>
+                  <div className="absolute bottom-3 left-4 text-white">
+                    <div className="flex items-center space-x-1.5 mb-1">
+                      <span className={`w-2 h-2 rounded-full shadow-sm ${selectedEvent.severity === 'HIGH' ? 'bg-red-500' : 'bg-amber-500'}`}></span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase text-white/90">{selectedEvent.severity} SEVERITY</span>
+                    </div>
+                    <h3 className="font-semibold text-lg leading-tight text-white tracking-wide">Road {selectedEvent.type}</h3>
+                  </div>
+                </div>
+              )}
+              <div className="p-4 bg-white/60">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm mb-5">
+                  <div>
+                    <div className="text-gray-400 text-[10px] font-bold tracking-wider uppercase mb-0.5">Confidence</div>
+                    <div className="font-semibold text-gray-900 flex items-center">
+                      <span className="text-blue-600 mr-1">🎯</span> {selectedEvent.confidence}%
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-[10px] font-bold tracking-wider uppercase mb-0.5">Reported By</div>
+                    <div className="font-semibold text-gray-900 flex items-center">
+                      <span className="text-blue-600 mr-1">🚌</span> {selectedEvent.busId}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-[10px] font-bold tracking-wider uppercase mb-0.5">Verified By</div>
+                    <div className="font-semibold text-gray-900 flex items-center">
+                      <span className="text-blue-600 mr-1">✔️</span> {selectedEvent.verifyingBuses.length} Buses
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-[10px] font-bold tracking-wider uppercase mb-0.5">Time</div>
+                    <div className="font-semibold text-gray-900 flex items-center">
+                      <span className="text-blue-600 mr-1">🕒</span> {new Date(selectedEvent.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Custom action logic could go here
+                    setSelectedEvent(null);
+                  }}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm rounded-lg transition-colors shadow-sm tracking-wide cursor-pointer"
+                >
+                  Dispatch Repair Crew
+                </button>
+              </div>
+            </div>
+            
+            {/* Triangle pointer pointing to the marker */}
+            {isTopAnchor ? (
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-gray-900 transform rotate-45 shadow-sm"></div>
+            ) : (
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 border-b border-r border-gray-200 transform rotate-45 shadow-sm"></div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Full Screen Image Modal */}
+      {fullScreenImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 animate-in fade-in duration-200 pointer-events-auto cursor-default"
+          onClick={(e) => { e.stopPropagation(); setFullScreenImage(null); }}
+        >
+          <button 
+            onClick={(e) => { e.stopPropagation(); setFullScreenImage(null); }}
+            className="absolute top-6 right-6 p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors cursor-pointer"
+          >
+            <X size={28} />
+          </button>
+          <img 
+            src={fullScreenImage} 
+            alt="Full Screen Anomaly" 
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

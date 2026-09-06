@@ -49,6 +49,29 @@
   animation: pulse-slow 2.5s ease-in-out infinite;
 }
 
+/* Remove default MapLibre popup padding so our custom UI fits perfectly */
+.event-popup .maplibregl-popup-content {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0.75rem !important; /* match rounded-xl */
+}
+
+.event-popup .maplibregl-popup-close-button {
+  color: white;
+  font-size: 1.5rem;
+  padding: 2px 8px;
+  right: 4px;
+  top: 4px;
+  outline: none;
+  z-index: 10;
+}
+
+.event-popup .maplibregl-popup-close-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
 /* Number counting animation */
 @keyframes count-flash {
   0% { color: #EF4444; text-shadow: 0 0 8px rgba(239,68,68,0.8); }

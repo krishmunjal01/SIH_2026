@@ -265,26 +265,41 @@ const INITIAL_EVENTS: Event[] = [
   {
     id: 'EVT-001',
     type: 'Pothole',
-    latitude: 30.7345,
-    longitude: 76.7725,
-    confidence: 92,
+    latitude: 30.746242,
+    longitude: 76.78614,
+    confidence: 94,
     severity: 'HIGH',
-    busId: 'BUS-002',
+    busId: 'BUS-001',
     timestamp: new Date().toISOString(),
     status: 'VERIFIED',
-    verifyingBuses: ['BUS-002', 'BUS-003'],
+    verifyingBuses: ['BUS-001', 'BUS-002', 'BUS-003'],
+    imageUrl: '/pothole1.jpeg'
   },
   {
     id: 'EVT-002',
     type: 'Crack',
-    latitude: 30.7290,
-    longitude: 76.7820,
+    latitude: 30.733711,
+    longitude: 76.779808,
     confidence: 88,
     severity: 'MEDIUM',
     busId: 'BUS-005',
     timestamp: new Date().toISOString(),
     status: 'VERIFIED',
     verifyingBuses: ['BUS-005', 'BUS-008'],
+    imageUrl: '/crack.jpeg'
+  },
+  {
+    id: 'EVT-003',
+    type: 'Pothole',
+    latitude: 30.741143,
+    longitude: 76.792146,
+    confidence: 91,
+    severity: 'HIGH',
+    busId: 'BUS-009',
+    timestamp: new Date().toISOString(),
+    status: 'VERIFIED',
+    verifyingBuses: ['BUS-009', 'BUS-010', 'BUS-012'],
+    imageUrl: '/pothole2.jpeg'
   },
 ];
 
@@ -387,6 +402,7 @@ class DemoEngine {
         timestamp: new Date().toISOString(),
         status: 'PENDING',
         verifyingBuses: [targetBus.id],
+        imageUrl: '/pothole1.jpeg',
       };
       this.events.push(potholeEvt);
       store.setEvents([...this.events]);
